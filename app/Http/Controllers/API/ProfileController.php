@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\API;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,12 +17,26 @@ class ProfileController extends Controller
     public function updateProfile(Request $request)
     {
         $request->validate([
-            'name' => 'sometimes|required|string',
-            'email' => 'sometimes|required|email|unique:users,email,' . Auth::id(),
+            'username' => 'sometimes|required|string|max:255',
+            'gender' => 'sometimes|required|string|max:255',
+            'phone_number' => 'sometimes|required|string|max:20',
         ]);
 
         $user = Auth::user();
-        $user->update($request->all());
+
+        if ($request->has('username')) {
+            $user->username = $request->username;
+        }
+
+        if ($request->has('gender')) {
+            $user->gender = $request->gender;
+        }
+
+        if ($request->has('phone_number')) {
+            $user->phone_number = $request->phone_number;
+        }
+
+        $user->save();
 
         return response()->json(['message' => 'Profile updated successfully', 'user' => $user], 200);
     }
